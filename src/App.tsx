@@ -1,16 +1,29 @@
 import { AlbersUsa } from '@visx/geo';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 import * as topojson from 'topojson-client';
 import topology from './america.json'
-import { scaleQuantile } from '@visx/scale';
 import { geoAlbersUsa } from 'd3-geo';
 import { LegendQuantile } from '@visx/legend';
 import MapLegend from './components/map-legend';
+import Tooltip from './components/tooltip';
+import { coScale, fillColor, no2Scale, o3Scale, pm10Scale, pm25Scale, so2Scale } from './utils/util';
 
-function App() {
+
+const pollutants: Record<string, { name: string, unit: string, scale: any }> = {
+  pm25: { name: 'pm25', unit: "µg/m³", scale: pm25Scale },
+  pm10: { name: 'pm10', unit: "µg/m³", scale: pm10Scale },
+  co: { name: 'co', unit: "ppm", scale: coScale },
+  no2: { name: 'no2', unit: "ppm", scale: no2Scale },
+  so2: { name: 'so2', unit: "ppm", scale: so2Scale },
+  o3: { name: 'o3', unit: "ppm", scale: o3Scale },
+}
+
+export default function App() {
   const [active, setActive] = useState<null | number>(null);
   const [data, setData] = useState<any>([]);
+  const [pollutant, setPollutant] = useState('pm25');
+  const activePollutant = pollutants[pollutant];
   const projection = geoAlbersUsa();
   const width = 1000;
   const height = 500;
@@ -27,12 +40,6 @@ function App() {
     type: 'FeatureCollection';
     features: FeatureShape[];
   };
-
-  const quantileScale = scaleQuantile({
-    reverse: true,
-    domain: [0, 25],
-    range: ['#eb4d70', '#f19938', '#6ce18b', '#78f6ef', '#9096f8'],
-  });
 
 
 
@@ -52,45 +59,32 @@ function App() {
         <g>
           {data.map((station: any, i: number) => {
             const coords: [number, number] = [station.coordinates.longitude, station.coordinates.latitude];
-            const pm25 = station.parameters.find((param: any) => param.parameter === 'pm25');
+            const pollutant = station.parameters.find((param: any) => param.parameter === activePollutant.name);
             return <circle
               onMouseOver={() => setActive(i)}
+              onMouseOut={() => setActive(null)}
               key={i}
-              r={6}
-              opacity={0.9}
-              fill={pm25 ? quantileScale(pm25.lastValue) : '#ffffff50'}
+              r={active === i ? 10 : 6}
+              opacity={active === i ? 1 : .6}
+              fill={fillColor(pollutant, activePollutant)}
               transform={`translate(${projection(coords)})`}
             />
 
           })}
         </g>
       </svg>
-      <MapLegend title='µg/m³ PM2.5' children={<LegendQuantile scale={quantileScale} />} />
-      {active &&
-        <div className='wrapper'>
-          <div>{data[active].name}</div>
-          <div>City: {data[active].city}</div>
-          <div>Entity: {data[active].entity}</div>
-          <div>
-            {data[active].parameters.map((param: any) => {
-              return <span>{`${param.displayName}: ${param.lastValue} `}</span>
-            })}
-          </div>
-          <style>{`
-            .wrapper {
-              font-size: 16px;
-              padding: 10px 10px;
-              border-radius: 8px;
-              margin: 5px 5px;
-            }
-            .title {
-              font-size: 16px;
-            }
-      `}</style>
-        </div>}
+      <MapLegend
+        title={activePollutant.unit}
+        children={<LegendQuantile labelFormat={(i: any) => Math.round(i * 100) / 100} scale={activePollutant.scale} />}
+        onSelect={(e: any) => {
+          e.preventDefault();
+          setPollutant(e.target.value);
+        }} />
+      <div>
+        {active && <Tooltip d={data[active]} />
+        }
+      </div>
     </div>
 
   );
 }
-
-export default App;
