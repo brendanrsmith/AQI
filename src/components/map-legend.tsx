@@ -5,7 +5,7 @@ export default function MapLegend({ title, children, onSelect }: { title: string
         e.preventDefault();
         onSelect(e);
       }} style={{ background: '#282c34', color: '#fff', padding: 3, borderRadius: 4, marginBottom: 10 }} name="pollutant" id="pollutant">
-        <option selected value={'pm25'}>pm2.5</option>
+        <option value={'pm25'}>pm2.5</option>
         <option value={'pm10'}>pm10</option>
         <option value={'so2'}>SO2</option>
         <option value={'o3'}>O3</option>
@@ -15,6 +15,7 @@ export default function MapLegend({ title, children, onSelect }: { title: string
 
       <div className='title'>{title}</div>
       {children}
+      <div style={{ fontSize: 10, color: 'grey' }}>Sources without data are shown in grey.</div>
       <style>{`
         .legend {
           font-size: 12px;

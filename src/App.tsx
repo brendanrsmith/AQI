@@ -8,6 +8,7 @@ import { LegendQuantile } from '@visx/legend';
 import MapLegend from './components/map-legend';
 import Tooltip from './components/tooltip';
 import { coScale, fillColor, no2Scale, o3Scale, pm10Scale, pm25Scale, so2Scale } from './utils/util';
+import Details from './components/details';
 
 
 const pollutants: Record<string, { name: string, unit: string, scale: any }> = {
@@ -20,7 +21,8 @@ const pollutants: Record<string, { name: string, unit: string, scale: any }> = {
 }
 
 export default function App() {
-  const [active, setActive] = useState<null | number>(null);
+  const [activeStation, setActiveStation] = useState<null | number>(null);
+  const [selectedStation, setSelectedStation] = useState<any>(null);
   const [data, setData] = useState<any>([]);
   const [pollutant, setPollutant] = useState('pm25');
   const activePollutant = pollutants[pollutant];
@@ -53,38 +55,46 @@ export default function App() {
   }, []);
 
   return (
-    <div className="App">
-      <svg width={width} height={height}>
-        <AlbersUsa data={usa} />
-        <g>
-          {data.map((station: any, i: number) => {
-            const coords: [number, number] = [station.coordinates.longitude, station.coordinates.latitude];
-            const pollutant = station.parameters.find((param: any) => param.parameter === activePollutant.name);
-            return <circle
-              onMouseOver={() => setActive(i)}
-              onMouseOut={() => setActive(null)}
-              key={i}
-              r={active === i ? 10 : 6}
-              opacity={active === i ? 1 : .6}
-              fill={fillColor(pollutant, activePollutant)}
-              transform={`translate(${projection(coords)})`}
-            />
+    <>
+      <div className="App">
+        {selectedStation &&
+          <Details
+            station={selectedStation}
+            onClick={() => setSelectedStation(null)}
+          />}
+        <svg width={width} height={height}>
+          <AlbersUsa data={usa} />
+          <g>
+            {data.map((station: any, i: number) => {
+              const coords: [number, number] = [station.coordinates.longitude, station.coordinates.latitude];
+              const pollutant = station.parameters.find((param: any) => param.parameter === activePollutant.name);
+              return <circle
+                onMouseOver={() => setActiveStation(i)}
+                onMouseOut={() => setActiveStation(null)}
+                onClick={() => setSelectedStation(station)}
+                key={i}
+                r={activeStation === i ? 10 : 6}
+                opacity={activeStation === i ? 1 : .6}
+                fill={fillColor(pollutant, activePollutant)}
+                transform={`translate(${projection(coords)})`}
+              />
 
-          })}
-        </g>
-      </svg>
-      <MapLegend
-        title={activePollutant.unit}
-        children={<LegendQuantile labelFormat={(i: any) => Math.round(i * 100) / 100} scale={activePollutant.scale} />}
-        onSelect={(e: any) => {
-          e.preventDefault();
-          setPollutant(e.target.value);
-        }} />
-      <div>
-        {active && <Tooltip d={data[active]} />
-        }
+            })}
+          </g>
+        </svg>
+        <MapLegend
+          title={activePollutant.unit}
+          children={<LegendQuantile labelFormat={(i: any) => Math.round(i * 100) / 100} scale={activePollutant.scale} />}
+          onSelect={(e: any) => {
+            e.preventDefault();
+            setPollutant(e.target.value);
+          }} />
+        <div>
+          {activeStation && <Tooltip d={data[activeStation]} />
+          }
+        </div>
       </div>
-    </div>
+    </>
 
   );
 }

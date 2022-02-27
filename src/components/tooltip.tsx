@@ -24,7 +24,7 @@ export default function Tooltip({ d }: any): JSX.Element {
             <div>City: {d.city || 'unknown'}</div>
             <div>Entity: {d.entity || 'unknown'}</div>
             {Object.keys(params).map(param => {
-                return <div>{`${param}: ${params[param]}`}</div>
+                return <div key={param}>{`${param}: ${params[param]}`}</div>
             })}
             <style>{`
         .wrapper {

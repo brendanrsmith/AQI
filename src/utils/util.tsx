@@ -7,7 +7,7 @@ export const pm25Scale = scaleQuantile({
 });
 export const pm10Scale = scaleQuantile({
     reverse: true,
-    domain: [0, 150],
+    domain: [0, 244],
     range: ['#eb4d70', '#f19938', '#6ce18b', '#78f6ef', '#9096f8'],
 });
 export const no2Scale = scaleQuantile({
