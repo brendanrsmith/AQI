@@ -1,24 +1,30 @@
+import { AlbersUsa } from '@visx/geo';
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import * as topojson from 'topojson-client';
+import topology from './america.json'
 
 function App() {
+  const width = 1000;
+  const height = 500;
+
+  interface FeatureShape {
+    type: 'Feature';
+    id: string;
+    geometry: { coordinates: [number, number][][]; type: 'Polygon' };
+    properties: { name: string };
+  }
+  // @ts-ignore
+  const { features: usa } = topojson.feature(topology, topology.objects.states) as {
+    type: 'FeatureCollection';
+    features: FeatureShape[];
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <svg width={width} height={height}>
+        <AlbersUsa data={usa} />
+      </svg>
     </div>
   );
 }
