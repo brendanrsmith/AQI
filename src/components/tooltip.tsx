@@ -20,18 +20,24 @@ export default function Tooltip({ d }: any): JSX.Element {
 
     return (
         <div className='wrapper'>
-            <div>{d.name ?? 'unknown'}</div>
+            <div className="name">{d.name || 'unknown'}</div>
             <div>City: {d.city || 'unknown'}</div>
             <div>Entity: {d.entity || 'unknown'}</div>
             {Object.keys(params).map(param => {
-                return <div key={param}>{`${param}: ${params[param]}`}</div>
+                return <div className="data" key={param}>{`${param}: ${params[param]}`}</div>
             })}
             <style>{`
+        .name {
+            font-weight: bold;
+        }
         .wrapper {
           font-size: 16px;
           padding: 10px 10px;
           border-radius: 8px;
           margin: 5px 5px;
+        }
+        .data {
+            // text-align: left;
         }
   `}</style>
         </div>

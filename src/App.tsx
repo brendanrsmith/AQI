@@ -56,8 +56,8 @@ export default function App() {
 
   useEffect(() => {
     const query = entity === 'null' ?
-      `https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=1000&page=1&offset=0&sort=desc&radius=1000&country_id=US&order_by=lastUpdated&dumpRaw=false`
-      : `https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=1000&page=1&offset=0&sort=desc&radius=1000&country_id=US&order_by=lastUpdated&entity=${entity}&dumpRaw=false`;
+      `https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=1000&page=1&offset=0&sort=desc&radius=1000&country_id=US&dumpRaw=false`
+      : `https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=1000&page=1&offset=0&sort=desc&radius=1000&country_id=US&entity=${entity}&dumpRaw=false`;
     console.log(query);
     fetch(query).then(response => response.json())
       .then(data => {
@@ -145,7 +145,7 @@ export default function App() {
             </Legend>
           </div>}
         />
-        <div>
+        <div style={{ width: 300, margin: 'auto' }}>
           {activeStation && <Tooltip d={data[activeStation]} />
           }
         </div>
