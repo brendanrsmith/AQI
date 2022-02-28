@@ -61,10 +61,8 @@ export default function App() {
     const query = entity === 'null' ?
       `https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=1000&page=1&offset=0&sort=desc&radius=1000&country_id=US&dumpRaw=false`
       : `https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=1000&page=1&offset=0&sort=desc&radius=1000&country_id=US&entity=${entity}&dumpRaw=false`;
-    console.log(query);
     fetch(query).then(response => response.json())
       .then(data => {
-        console.log(data);
         setData(data.results);
       }).catch(() => {
         alert('Something went wrong.')
