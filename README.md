@@ -1,6 +1,18 @@
 # AQI Viz Dashboard
 
-...
+## Setup
+
+Clone repo to your local machine
+
+`git clone git@github.com:brendanrsmith/aqi-viz.git`
+
+Install all dependencies
+
+ `npm install`
+
+Run the server locally using npm
+
+`npm start`
 
 ## Data Sources
 

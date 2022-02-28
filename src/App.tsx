@@ -11,6 +11,7 @@ import { coScale, fillColor, glyphScale, no2Scale, o3Scale, pm10Scale, pm25Scale
 import Details from './components/details';
 import { GlyphCircle, GlyphSquare, GlyphTriangle } from '@visx/glyph';
 import React from 'react';
+import { Text } from '@visx/text';
 
 
 export const pollutants: Record<string, { name: string, unit: string, scale: any }> = {
@@ -23,6 +24,7 @@ export const pollutants: Record<string, { name: string, unit: string, scale: any
 }
 
 export default function App() {
+  const [isLoading, setIsLoading] = useState(false);
   const [activeStation, setActiveStation] = useState<null | number>(null);
   const [selectedStation, setSelectedStation] = useState<any>(null);
   const [data, setData] = useState<any>([]);
@@ -55,6 +57,7 @@ export default function App() {
   //https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=500&page=1&offset=0&sort=desc&country_id=US&order_by=random&entity=community 
 
   useEffect(() => {
+    setIsLoading(true);
     const query = entity === 'null' ?
       `https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=1000&page=1&offset=0&sort=desc&radius=1000&country_id=US&dumpRaw=false`
       : `https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=1000&page=1&offset=0&sort=desc&radius=1000&country_id=US&entity=${entity}&dumpRaw=false`;
@@ -63,6 +66,10 @@ export default function App() {
       .then(data => {
         console.log(data);
         setData(data.results);
+      }).catch(() => {
+        alert('Something went wrong.')
+      }).finally(() => {
+        setIsLoading(false);
       });
 
   }, [entity]);
@@ -78,26 +85,37 @@ export default function App() {
         <div>AQI Explorer</div>
         <svg width={width} height={height}>
           <AlbersUsa data={usa} />
-          <g>
-            {data.map((station: any, i: number) => {
-              const coords: [number, number] = [station.coordinates?.longitude, station.coordinates?.latitude];
-              const pollutant = station.parameters.find((param: any) => param.parameter === activePollutant.name);
-              const entity = station.entity;
-              const CurrGlyph = Glyphs[entity];
+          {isLoading ? <Text
+            width={width / 6}
+            fill={'#fff'}
+            verticalAnchor="start"
+            scaleToFit
+            dy={250}
+            z={100}
+            dx={500}
+          >
+            Loading...
+          </Text> :
+            <g>
+              {data.map((station: any, i: number) => {
+                const coords: [number, number] = [station.coordinates?.longitude, station.coordinates?.latitude];
+                const pollutant = station.parameters.find((param: any) => param.parameter === activePollutant.name);
+                const entity = station.entity;
+                const CurrGlyph = Glyphs[entity];
 
-              return <CurrGlyph
-                onMouseOver={() => setActiveStation(i)}
-                onMouseOut={() => setActiveStation(null)}
-                onClick={() => setSelectedStation(station)}
-                key={i}
-                size={activeStation === i ? 160 : 100}
-                opacity={activeStation === i ? 1 : .6}
-                fill={fillColor(pollutant, activePollutant)}
-                transform={`translate(${projection(coords)})`}
-              />
+                return <CurrGlyph
+                  onMouseOver={() => setActiveStation(i)}
+                  onMouseOut={() => setActiveStation(null)}
+                  onClick={() => setSelectedStation(station)}
+                  key={i}
+                  size={activeStation === i ? 160 : 100}
+                  opacity={activeStation === i ? 1 : .6}
+                  fill={fillColor(pollutant, activePollutant)}
+                  transform={`translate(${projection(coords)})`}
+                />
 
-            })}
-          </g>
+              })}
+            </g>}
         </svg>
         <MapLegend
           title={activePollutant.unit}
