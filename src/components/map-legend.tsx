@@ -23,7 +23,7 @@ export default function MapLegend({ title, children, onSelect }: { title: string
           float: right;
           border-radius: 8px;
           margin: 5px 5px;
-          width: 100px;
+          width: 110px;
         }
         .title {
           font-size: 12px;

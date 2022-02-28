@@ -38,3 +38,9 @@ export const fillColor = (pollutant: any, activePollutant: any) => {
         return activePollutant.scale(pollutant.lastValue);
     }
 }
+
+export const filterDetails = (details: any, pollutant: string) => {
+    return details.filter((datum: any) => {
+        return datum.parameter === pollutant;
+    })
+}

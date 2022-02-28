@@ -1,8 +1,10 @@
 import { MouseEventHandler, useEffect, useState } from "react";
+import LineChart from "./line-chart";
 
 export default function Details(props: { station: any, onClick: MouseEventHandler<HTMLDivElement> | undefined }): JSX.Element {
     const [details, setDeatils] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+
 
     useEffect(() => {
         setIsLoading(true);
@@ -15,19 +17,16 @@ export default function Details(props: { station: any, onClick: MouseEventHandle
             });
     }, [props.station.id])
 
-    console.log(details);
 
     return (
-        <div style={{ position: 'absolute', height: '90vh', width: '100%', background: 'pink', borderRadius: 6 }} onClick={props.onClick}>
+        <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', height: '90vh', width: '100%', background: '#111', borderRadius: 6, overflow: 'scroll' }} onClick={props.onClick}>
             <div>
                 {props.station.name}, {props.station.city}
             </div>
             <div>
                 {isLoading ?
                     <div>loading...</div> :
-                    details.map((datum: any) => {
-                        return <div>{datum.date.utc}</div>;
-                    })
+                    <LineChart data={details} />
                 }
             </div>
         </div>
