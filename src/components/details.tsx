@@ -1,4 +1,5 @@
 import { MouseEventHandler, useEffect, useState } from "react";
+import { filterDetails } from "../utils/util";
 import LineChart from "./line-chart";
 
 export default function Details(props: { station: any, onClick: MouseEventHandler<HTMLDivElement> | undefined }): JSX.Element {
@@ -10,6 +11,26 @@ export default function Details(props: { station: any, onClick: MouseEventHandle
     const [co, setCo] = useState(false);
     const [no2, setNo2] = useState(false);
     const [o3, setO3] = useState(false);
+
+    const measurements = {
+        pm25Data: filterDetails(details, 'pm25'),
+        pm10Data: filterDetails(details, 'pm10'),
+        so2Data: filterDetails(details, 'so2'),
+        no2Data: filterDetails(details, 'no2'),
+        coData: filterDetails(details, 'co'),
+        o3Data: filterDetails(details, 'o3'),
+    }
+
+    const measurementCounts = {
+        pm25: measurements.pm25Data.length,
+        pm10: measurements.pm10Data.length,
+        so2: measurements.so2Data.length,
+        co: measurements.coData.length,
+        no2: measurements.no2Data.length,
+        o3: measurements.o3Data.length
+    }
+    const activeMeasurements = (Object.entries(measurementCounts).filter(m => m[1] > 0).map(m => m[0]));
+
     useEffect(() => {
         setIsLoading(true);
         fetch(`https://docs.openaq.org/v2/measurements?date_from=2021-01-01T00%3A00%3A00%2B00%3A00&date_to=2022-02-27T21%3A11%3A00%2B00%3A00&limit=100&page=1&offset=0&sort=desc&radius=1000&location_id=${props.station.id}&order_by=datetime`).then(response => response.json())
@@ -19,7 +40,6 @@ export default function Details(props: { station: any, onClick: MouseEventHandle
                 setIsLoading(false);
             });
     }, [props.station.id])
-
 
     return (
         <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', height: '90vh', width: '100%', background: '#111', borderRadius: 6, overflow: 'scroll', padding: 5 }}>
@@ -36,7 +56,7 @@ export default function Details(props: { station: any, onClick: MouseEventHandle
                         Sensor type: {props.station.sensorType}
                     </div>
                     <div style={{ fontSize: '14px' }}>
-                        Parameters: {props.station.parameters.length}
+                        Parameters: {activeMeasurements.join(', ')}
                     </div>
                 </div>
                 <div style={{ display: "flex" }}>
@@ -84,7 +104,7 @@ export default function Details(props: { station: any, onClick: MouseEventHandle
             <div>
                 {isLoading ?
                     <div>loading...</div> :
-                    <LineChart data={details} pm25={pm25} pm10={pm10} so2={so2} no2={no2} co={co} o3={o3} />
+                    <LineChart data={measurements} pm25={pm25} pm10={pm10} so2={so2} no2={no2} co={co} o3={o3} />
                 }
             </div>
         </div>
