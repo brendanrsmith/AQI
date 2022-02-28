@@ -4,14 +4,16 @@ import './App.css';
 import * as topojson from 'topojson-client';
 import topology from './america.json'
 import { geoAlbersUsa } from 'd3-geo';
-import { LegendQuantile } from '@visx/legend';
+import { Legend, LegendItem, LegendLabel, LegendQuantile } from '@visx/legend';
 import MapLegend from './components/map-legend';
 import Tooltip from './components/tooltip';
-import { coScale, fillColor, no2Scale, o3Scale, pm10Scale, pm25Scale, so2Scale } from './utils/util';
+import { coScale, fillColor, glyphScale, no2Scale, o3Scale, pm10Scale, pm25Scale, so2Scale } from './utils/util';
 import Details from './components/details';
+import { GlyphCircle, GlyphSquare, GlyphTriangle } from '@visx/glyph';
+import React from 'react';
 
 
-const pollutants: Record<string, { name: string, unit: string, scale: any }> = {
+export const pollutants: Record<string, { name: string, unit: string, scale: any }> = {
   pm25: { name: 'pm25', unit: "µg/m³", scale: pm25Scale },
   pm10: { name: 'pm10', unit: "µg/m³", scale: pm10Scale },
   co: { name: 'co', unit: "ppm", scale: coScale },
@@ -25,6 +27,7 @@ export default function App() {
   const [selectedStation, setSelectedStation] = useState<any>(null);
   const [data, setData] = useState<any>([]);
   const [pollutant, setPollutant] = useState('pm25');
+  const [entity, setEntity] = useState<string>('null');
   const activePollutant = pollutants[pollutant];
   const projection = geoAlbersUsa();
   const width = 1000;
@@ -43,16 +46,26 @@ export default function App() {
     features: FeatureShape[];
   };
 
+  const Glyphs = {
+    government: GlyphCircle,
+    research: GlyphTriangle,
+    community: GlyphSquare
+  }
 
+  //https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=500&page=1&offset=0&sort=desc&country_id=US&order_by=random&entity=community 
 
   useEffect(() => {
-    fetch('https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=500&page=1&offset=0&sort=desc&radius=1000&country_id=US&order_by=random&dumpRaw=false').then(response => response.json())
+    const query = entity === 'null' ?
+      `https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=1000&page=1&offset=0&sort=desc&radius=1000&country_id=US&order_by=lastUpdated&dumpRaw=false`
+      : `https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=1000&page=1&offset=0&sort=desc&radius=1000&country_id=US&order_by=lastUpdated&entity=${entity}&dumpRaw=false`;
+    console.log(query);
+    fetch(query).then(response => response.json())
       .then(data => {
         console.log(data);
         setData(data.results);
       });
 
-  }, []);
+  }, [entity]);
 
   return (
     <>
@@ -62,18 +75,22 @@ export default function App() {
             station={selectedStation}
             onClick={() => setSelectedStation(null)}
           />}
+        <div>AQI Explorer</div>
         <svg width={width} height={height}>
           <AlbersUsa data={usa} />
           <g>
             {data.map((station: any, i: number) => {
-              const coords: [number, number] = [station.coordinates.longitude, station.coordinates.latitude];
+              const coords: [number, number] = [station.coordinates?.longitude, station.coordinates?.latitude];
               const pollutant = station.parameters.find((param: any) => param.parameter === activePollutant.name);
-              return <circle
+              const entity = station.entity;
+              const CurrGlyph = Glyphs[entity];
+
+              return <CurrGlyph
                 onMouseOver={() => setActiveStation(i)}
                 onMouseOut={() => setActiveStation(null)}
                 onClick={() => setSelectedStation(station)}
                 key={i}
-                r={activeStation === i ? 10 : 6}
+                size={activeStation === i ? 160 : 100}
                 opacity={activeStation === i ? 1 : .6}
                 fill={fillColor(pollutant, activePollutant)}
                 transform={`translate(${projection(coords)})`}
@@ -84,11 +101,50 @@ export default function App() {
         </svg>
         <MapLegend
           title={activePollutant.unit}
-          children={<LegendQuantile labelFormat={(i: any) => Math.round(i * 100) / 100} scale={activePollutant.scale} />}
-          onSelect={(e: any) => {
+          selectPollutant={(e: any) => {
             e.preventDefault();
             setPollutant(e.target.value);
-          }} />
+          }}
+          selectEntity={(e: any) => {
+            e.preventDefault();
+            setEntity(e.target.value);
+          }}
+          children={<div>
+            <LegendQuantile labelFormat={(i: any) => Math.round(i * 100) / 100} scale={activePollutant.scale} />
+            <Legend scale={glyphScale}>
+              {(labels) => (
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  {labels.map((label, i) => {
+                    const color = '#fff';
+                    const shape = glyphScale(label.datum);
+                    const isValidElement = React.isValidElement(shape);
+                    return (
+                      <LegendItem
+                        key={`legend-quantile-${i}`}
+                        flexDirection="row"
+                        alignItems='center'
+                      >
+                        <svg
+                          width={24}
+                          height={16}
+                        >
+                          {isValidElement
+                            ? React.cloneElement(shape as React.ReactElement)
+                            : React.createElement(shape as unknown as React.ComponentType<{ fill: string }>, {
+                              fill: color,
+                            })}
+                        </svg>
+                        <LegendLabel align="left" margin={0}>
+                          {label.text}
+                        </LegendLabel>
+                      </LegendItem>
+                    );
+                  })}
+                </div>
+              )}
+            </Legend>
+          </div>}
+        />
         <div>
           {activeStation && <Tooltip d={data[activeStation]} />
           }
