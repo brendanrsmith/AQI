@@ -50,7 +50,7 @@ export default function Details(props: { station: any, onClick: MouseEventHandle
                         {props.station.name} {props.station.city}
                     </div>
                     <div style={{ fontSize: '14px' }}>
-                        Last updated: {new Date(props.station.lastUpdated).toLocaleTimeString()}
+                        Last updated: {new Date(props.station.lastUpdated).toLocaleString()}
                     </div>
                     <div style={{ fontSize: '14px' }}>
                         Sensor type: {props.station.sensorType}

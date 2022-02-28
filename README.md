@@ -14,6 +14,8 @@ Run the server locally using npm
 
 `npm start`
 
+View the webpage on your browser (defaults to `localhost:3000`)
+
 ## Data Sources
 
 - AQI data from <https://docs.openaq.org/#/v2>
