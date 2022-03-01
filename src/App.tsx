@@ -22,6 +22,11 @@ export const pollutants: Record<string, { name: string, unit: string, scale: any
   so2: { name: 'so2', unit: "ppm", scale: so2Scale },
   o3: { name: 'o3', unit: "ppm", scale: o3Scale },
 }
+export const Glyphs = {
+  government: GlyphCircle,
+  research: GlyphTriangle,
+  community: GlyphSquare
+}
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -48,11 +53,6 @@ export default function App() {
     features: FeatureShape[];
   };
 
-  const Glyphs = {
-    government: GlyphCircle,
-    research: GlyphTriangle,
-    community: GlyphSquare
-  }
 
   //https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=500&page=1&offset=0&sort=desc&country_id=US&order_by=random&entity=community 
 
@@ -98,7 +98,7 @@ export default function App() {
               {data.map((station: any, i: number) => {
                 const coords: [number, number] = [station.coordinates?.longitude, station.coordinates?.latitude];
                 const pollutant = station.parameters.find((param: any) => param.parameter === activePollutant.name);
-                const entity = station.entity;
+                const entity = station.entity ?? 'community';
                 const CurrGlyph = Glyphs[entity];
 
                 return <CurrGlyph
