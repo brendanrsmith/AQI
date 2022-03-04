@@ -1,5 +1,7 @@
 # AQI Viz Dashboard
 
+View the live site [here](https://www.brendansmith.dev/aqi-viz/)
+
 ## Setup
 
 Clone repo to your local machine
