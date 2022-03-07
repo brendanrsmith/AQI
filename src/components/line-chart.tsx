@@ -13,12 +13,12 @@ export default function LineChart(props: { data: any, pm25: boolean, pm10: boole
         <XYChart theme={darkTheme} height={height} width={width} xScale={{ type: "band", reverse: true }} yScale={{ type: 'linear', nice: true }}>
             <AnimatedAxis orientation="bottom" label="Time" tickComponent={() => null} />
             <AnimatedAxis orientation="left" label="Concentration" />
-            {props.pm25 && <AnimatedLineSeries dataKey="pm25" data={props.data.pm25Data} {...accessors} />}
-            {props.pm10 && <AnimatedLineSeries dataKey="pm10" data={props.data.pm10Data} {...accessors} />}
-            {props.so2 && <AnimatedLineSeries dataKey="so2" data={props.data.so2Data} {...accessors} />}
-            {props.no2 && <AnimatedLineSeries dataKey="no2" data={props.data.no2Data} {...accessors} />}
-            {props.o3 && <AnimatedLineSeries dataKey="o3" data={props.data.o3Data} {...accessors} />}
-            {props.co && <AnimatedLineSeries dataKey="co" data={props.data.coData} {...accessors} />}
+            {props.pm25 && <AnimatedLineSeries dataKey="pm25" data={props.data.pm25} {...accessors} />}
+            {props.pm10 && <AnimatedLineSeries dataKey="pm10" data={props.data.pm10} {...accessors} />}
+            {props.so2 && <AnimatedLineSeries dataKey="so2" data={props.data.so2} {...accessors} />}
+            {props.no2 && <AnimatedLineSeries dataKey="no2" data={props.data.no2} {...accessors} />}
+            {props.o3 && <AnimatedLineSeries dataKey="o3" data={props.data.o3} {...accessors} />}
+            {props.co && <AnimatedLineSeries dataKey="co" data={props.data.co} {...accessors} />}
             <Tooltip
                 snapTooltipToDatumX
                 snapTooltipToDatumY

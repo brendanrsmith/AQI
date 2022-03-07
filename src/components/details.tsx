@@ -7,27 +7,35 @@ export default function Details(props: { station: any, onClick: MouseEventHandle
     const [isLoading, setIsLoading] = useState(false);
     const [pm25, setPm25] = useState(true);
     const [pm10, setPm10] = useState(true);
-    const [so2, setSo2] = useState(false);
-    const [co, setCo] = useState(false);
-    const [no2, setNo2] = useState(false);
-    const [o3, setO3] = useState(false);
+    const [so2, setSo2] = useState(true);
+    const [co, setCo] = useState(true);
+    const [no2, setNo2] = useState(true);
+    const [o3, setO3] = useState(true);
 
     const measurements = {
-        pm25Data: filterDetails(details, 'pm25'),
-        pm10Data: filterDetails(details, 'pm10'),
-        so2Data: filterDetails(details, 'so2'),
-        no2Data: filterDetails(details, 'no2'),
-        coData: filterDetails(details, 'co'),
-        o3Data: filterDetails(details, 'o3'),
+        pm25: filterDetails(details, 'pm25'),
+        pm10: filterDetails(details, 'pm10'),
+        so2: filterDetails(details, 'so2'),
+        no2: filterDetails(details, 'no2'),
+        co: filterDetails(details, 'co'),
+        o3: filterDetails(details, 'o3'),
     }
 
     const measurementCounts = {
-        pm25: measurements.pm25Data.length,
-        pm10: measurements.pm10Data.length,
-        so2: measurements.so2Data.length,
-        co: measurements.coData.length,
-        no2: measurements.no2Data.length,
-        o3: measurements.o3Data.length
+        pm25: measurements.pm25.length,
+        pm10: measurements.pm10.length,
+        so2: measurements.so2.length,
+        co: measurements.co.length,
+        no2: measurements.no2.length,
+        o3: measurements.o3.length
+    }
+    const setDisplay = {
+        pm25: [pm25, setPm25],
+        pm10: [pm10, setPm10],
+        so2: [so2, setSo2],
+        co: [co, setCo],
+        no2: [no2, setNo2],
+        o3: [o3, setO3],
     }
     const activeMeasurements = (Object.entries(measurementCounts).filter(m => m[1] > 0).map(m => m[0]));
 
@@ -62,41 +70,19 @@ export default function Details(props: { station: any, onClick: MouseEventHandle
                 <div style={{ display: "flex" }}>
 
                     <div style={{ fontSize: '14px', alignItems: 'flex-start', display: 'flex', flexDirection: 'column' }}>
-                        <div style={{ alignItems: "center", justifyContent: 'center', paddingBottom: '2px' }}>
-                            <input type="checkbox" id="pm25" name="pm25" onChange={() => setPm25(!pm25)} value={'pm25'} defaultChecked
-                            />
-                            <label htmlFor="pm25">pm25</label>
-                        </div>
-                        <div style={{ alignItems: "center", justifyContent: 'center', paddingBottom: '2px' }}>
-                            <input type="checkbox" id="pm10" name="pm10" onChange={() => setPm10(!pm10)} value={'pm10'} defaultChecked
-                            />
-                            <label htmlFor="pm10">pm10</label>
-                        </div>
-                        <div style={{ alignItems: "center", justifyContent: 'center', paddingBottom: '2px' }}>
-                            <input type="checkbox" id="so2" name="so2" onChange={() => setSo2(!so2)} value={'so2'}
-                            />
-                            <label htmlFor="so2">so2</label>
-                        </div>
+                        {Object.entries(measurements).map(measurement => {
+                            const title = measurement[0];
+                            const hasData = measurementCounts[title];
+                            return hasData ? (
+                                <div style={{ alignItems: "center", justifyContent: 'center', paddingBottom: '2px' }}>
+                                    <input type="checkbox" id={title} name={title} onChange={() => setDisplay[title][1](!setDisplay[title][0])} value={measurement[0]} defaultChecked
+                                    />
+                                    <label htmlFor={title}>{title}</label>
+                                </div>
+                            ) : (undefined)
+                        })}
                     </div>
 
-                    <div style={{ fontSize: '14px', alignItems: 'flex-start', display: 'flex', flexDirection: 'column' }}>
-
-                        <div style={{ alignItems: "center", justifyContent: 'center', paddingBottom: '2px' }}>
-                            <input type="checkbox" id="co" name="co" onChange={() => setCo(!co)} value={'co'}
-                            />
-                            <label htmlFor="co">co</label>
-                        </div>
-                        <div style={{ alignItems: "center", justifyContent: 'center', paddingBottom: '2px' }}>
-                            <input type="checkbox" id="no2" name="no2" onChange={() => setNo2(!no2)} value={'no2'}
-                            />
-                            <label htmlFor="no2">no2</label>
-                        </div>
-                        <div style={{ alignItems: "center", justifyContent: 'center', paddingBottom: '2px' }}>
-                            <input type="checkbox" id="o3" name="o3" onChange={() => setO3(!o3)} value={'o3'}
-                            />
-                            <label htmlFor="o3">o3</label>
-                        </div>
-                    </div>
                 </div>
 
             </div>
