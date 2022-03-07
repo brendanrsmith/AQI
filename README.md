@@ -2,7 +2,11 @@
 
 View the live site [here](https://www.brendansmith.dev/aqi-viz/)
 
-## Setup
+## About
+
+A simple visualization dashboard for Air Quality indeces as provided by the OpenAQ air quality API, written with React and the Visx visualization library. Currently a work in progres for experimenting with visualizations.
+
+## Local Setup
 
 Clone repo to your local machine
 
@@ -25,5 +29,7 @@ View the webpage on your browser (defaults to `localhost:3000`)
 
 ## Future Features
 
-- Add zoom functionality to map
-- Ability to adjust total number of stations shown on map
+- [ ] Add zoom functionality to map
+- [ ] Ability to adjust total number of stations shown on map
+- [ ] Adjust time series
+- [ ] Add multiple scales do default chart
