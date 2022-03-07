@@ -4,7 +4,7 @@ View the live site [here](https://www.brendansmith.dev/aqi-viz/)
 
 ## About
 
-A simple visualization dashboard for Air Quality indeces as provided by the OpenAQ air quality API, written with React and the Visx visualization library. Currently a work in progres for experimenting with visualizations.
+A simple visualization dashboard for Air Quality indeces as provided by the OpenAQ air quality API, written with React and the [Visx](https://github.com/airbnb/visx/) visualization library. Currently a work in progres for experimenting with visualizations.
 
 ## Local Setup
 
