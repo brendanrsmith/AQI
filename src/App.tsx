@@ -59,13 +59,15 @@ export default function App() {
   useEffect(() => {
     setIsLoading(true);
     const query = entity === 'null' ?
-      `https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=1000&page=1&offset=0&sort=desc&radius=1000&country_id=US&dumpRaw=false`
-      : `https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=1000&page=1&offset=0&sort=desc&radius=1000&country_id=US&entity=${entity}&dumpRaw=false`;
+      'https://api.openaq.org/v2/locations?limit=1000&page=1&offset=0&sort=desc&radius=1000&country=US&order_by=lastUpdated&dumpRaw=false'
+      : `https://api.openaq.org/v2/locations?limit=1000&page=1&offset=0&sort=desc&radius=1000&country=US&entity=${entity}&dumpRaw=false`;
     fetch(query).then(response => response.json())
       .then(data => {
+        if(data)
         setData(data.results);
       }).catch(() => {
-        alert('Something went wrong.')
+        alert('Something went wrong.');
+
       }).finally(() => {
         setIsLoading(false);
       });

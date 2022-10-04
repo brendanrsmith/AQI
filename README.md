@@ -29,6 +29,7 @@ View the webpage on your browser (defaults to `localhost:3000`)
 
 ## Future Features
 
+- [ ] ERROR HANDLING
 - [ ] Add zoom functionality to map
 - [ ] Ability to adjust total number of stations shown on map
 - [ ] Adjust time series

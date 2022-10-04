@@ -41,16 +41,20 @@ export default function Details(props: { station: any, onClick: MouseEventHandle
 
     useEffect(() => {
         setIsLoading(true);
-        fetch(`https://docs.openaq.org/v2/measurements?date_from=2021-01-01T00%3A00%3A00%2B00%3A00&date_to=2022-02-27T21%3A11%3A00%2B00%3A00&limit=100&page=1&offset=0&sort=desc&radius=1000&location_id=${props.station.id}&order_by=datetime`).then(response => response.json())
-            .then(data => {
-                setDeatils(data.results);
-            }).finally(() => {
-                setIsLoading(false);
-            });
+        fetch('https://api.openaq.org/v2/latest/1234?limit=100&page=1&offset=0&sort=desc&radius=1000&order_by=lastUpdated&dumpRaw=false')
+        // fetch(`https://docs.openaq.org/v2/measurements?date_from=2021-01-01T00%3A00%3A00%2B00%3A00&date_to=2022-02-27T21%3A11%3A00%2B00%3A00&limit=100&page=1&offset=0&sort=desc&radius=1000&location_id=${props.station.id}&order_by=datetime`)
+        .then(response => response.json())
+        .then(data => {
+            setDeatils(data.results);
+        }).finally(() => {
+            setIsLoading(false);
+        }).catch(error => {
+            console.log(error);
+        });
     }, [props.station.id])
 
     return (
-        <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', height: '90vh', width: '100%', background: '#111', borderRadius: 6, overflow: 'scroll', padding: 5 }}>
+        <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', height: '90vh', width: '90vw', background: '#111', borderRadius: 6, overflow: 'scroll', padding: 5 }}>
             <div style={{ justifyContent: 'space-between', flexDirection: 'row', display: "flex", paddingLeft: '1rem', paddingRight: '1rem' }}>
                 <div style={{ cursor: 'pointer' }} onClick={props.onClick}>x</div>
                 <div>
