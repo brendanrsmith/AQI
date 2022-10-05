@@ -54,19 +54,24 @@ export default function App() {
   };
 
 
-  //https://u50g7n0cbj.execute-api.us-east-1.amazonaws.com/v2/locations?limit=500&page=1&offset=0&sort=desc&country_id=US&order_by=random&entity=community 
-
   useEffect(() => {
     setIsLoading(true);
     const query = entity === 'null' ?
       'https://api.openaq.org/v2/locations?limit=1000&page=1&offset=0&sort=desc&radius=1000&country=US&order_by=lastUpdated&dumpRaw=false'
       : `https://api.openaq.org/v2/locations?limit=1000&page=1&offset=0&sort=desc&radius=1000&country=US&entity=${entity}&dumpRaw=false`;
-    fetch(query).then(response => response.json())
+    fetch(query).then(response => {
+      if(response.status !== 200){
+        throw response.statusText;
+      }
+      else {
+        return response.json()
+      }
+    })
       .then(data => {
         if(data)
         setData(data.results);
-      }).catch(() => {
-        alert('Something went wrong.');
+      }).catch((e) => {
+        alert('Something went wrong: ' + e);
 
       }).finally(() => {
         setIsLoading(false);
@@ -75,7 +80,6 @@ export default function App() {
   }, [entity]);
 
   return (
-    <>
       <div className="App">
         {selectedStation &&
           <Details
@@ -168,7 +172,5 @@ export default function App() {
           }
         </div>
       </div>
-    </>
-
   );
 }

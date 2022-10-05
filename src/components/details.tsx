@@ -3,7 +3,7 @@ import { filterDetails } from "../utils/util";
 import LineChart from "./line-chart";
 
 export default function Details(props: { station: any, onClick: MouseEventHandler<HTMLDivElement> | undefined }): JSX.Element {
-    const [details, setDeatils] = useState([]);
+    const [details, setDetails] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [pm25, setPm25] = useState(true);
     const [pm10, setPm10] = useState(true);
@@ -38,21 +38,25 @@ export default function Details(props: { station: any, onClick: MouseEventHandle
         o3: [o3, setO3],
     }
     const activeMeasurements = (Object.entries(measurementCounts).filter(m => m[1] > 0).map(m => m[0]));
-
     useEffect(() => {
         setIsLoading(true);
-        fetch('https://api.openaq.org/v2/latest/1234?limit=100&page=1&offset=0&sort=desc&radius=1000&order_by=lastUpdated&dumpRaw=false')
-        // fetch(`https://docs.openaq.org/v2/measurements?date_from=2021-01-01T00%3A00%3A00%2B00%3A00&date_to=2022-02-27T21%3A11%3A00%2B00%3A00&limit=100&page=1&offset=0&sort=desc&radius=1000&location_id=${props.station.id}&order_by=datetime`)
+        fetch(`https://api.openaq.org/v2/measurements?date_from=2000-01-01T00%3A00%3A00%2B00%3A00&date_to=${new Date().toJSON()}&limit=100&page=1&offset=0&sort=desc&radius=1000&location_id=${props.station.id}&order_by=datetime`)
+        .then(res => {
+            if(res.status !== 200){
+                 throw res.status;
+            }
+            return res;
+        })
         .then(response => response.json())
         .then(data => {
-            setDeatils(data.results);
+            setDetails(data.results);
         }).finally(() => {
             setIsLoading(false);
         }).catch(error => {
-            console.log(error);
+            alert('api error: ' + error);
         });
     }, [props.station.id])
-
+    
     return (
         <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', height: '90vh', width: '90vw', background: '#111', borderRadius: 6, overflow: 'scroll', padding: 5 }}>
             <div style={{ justifyContent: 'space-between', flexDirection: 'row', display: "flex", paddingLeft: '1rem', paddingRight: '1rem' }}>
